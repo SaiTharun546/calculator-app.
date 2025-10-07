@@ -25,7 +25,7 @@ phases:
       - echo Pushing image to Docker Hub...
       - docker push $DOCKERHUB_USERNAME/calculator-app:$IMAGE_TAG
       - echo Writing imagedefinitions.json for ECS Deploy...
-      - printf '[{"name":"calculator-app","imageUri":"%s"}]' $ECR_REPO_URI:$IMAGE_TAG > imagedefinitions.json
+      - printf '[{"name":"calculator-app-container-td ","imageUri":"%s"}]' $ECR_REPO_URI:$IMAGE_TAG > imagedefinitions.json
 artifacts:
   files:
     - imagedefinitions.json
