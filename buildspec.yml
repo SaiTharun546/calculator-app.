@@ -1,23 +1,15 @@
 version: 0.2
-
 env:
   variables:
-    # Your ECR repository URI
     ECR_REPO_URI: "884038419944.dkr.ecr.eu-west-1.amazonaws.com/calculator-app"
     IMAGE_TAG: "latest"
-  # DOCKERHUB_USERNAME and DOCKERHUB_PASSWORD must be set
-  # in your CodeBuild project environment variables.
-
 phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - aws --region $AWS_DEFAULT_REGION ecr get-login-password \
-          | docker login --username AWS --password-stdin $ECR_REPO_URI
+      - aws --region $AWS_DEFAULT_REGION ecr get-login-password | docker login --username AWS --password-stdin $ECR_REPO_URI
       - echo Logging in to Docker Hub...
-      - echo "$DOCKERHUB_PASSWORD" \
-          | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
-
+      - echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
   build:
     commands:
       - echo Building Docker image...
@@ -25,9 +17,7 @@ phases:
       - echo Tagging for ECR...
       - docker tag calculator-app:$IMAGE_TAG $ECR_REPO_URI:$IMAGE_TAG
       - echo Tagging for Docker Hub...
-      - docker tag calculator-app:$IMAGE_TAG \
-          $DOCKERHUB_USERNAME/calculator-app:$IMAGE_TAG
-
+      - docker tag calculator-app:$IMAGE_TAG $DOCKERHUB_USERNAME/calculator-app:$IMAGE_TAG
   post_build:
     commands:
       - echo Pushing image to Amazon ECR...
@@ -36,7 +26,6 @@ phases:
       - docker push $DOCKERHUB_USERNAME/calculator-app:$IMAGE_TAG
       - echo Writing imagedefinitions.json for ECS Deploy...
       - printf '[{"name":"calculator-app","imageUri":"%s"}]' $ECR_REPO_URI:$IMAGE_TAG > imagedefinitions.json
-
 artifacts:
   files:
     - imagedefinitions.json
